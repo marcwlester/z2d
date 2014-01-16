@@ -1,6 +1,6 @@
 var z2d = {
 	VERSION: '0.1',
-	LOG_LEVEL: 1,
+	LOG_LEVEL: 0,
 	Screens: {},
 	Logger: {
 		LOG_CRIT: 1,
@@ -215,73 +215,74 @@ z2d.Input = (function(Input) {
 	Input.inputProcessor = null;
 	Input.enabled = false;
 	Input.enable = function() {
-		this.enabled = true;
-		document.addEventListener("keyup", this.keyUp, false);
-		document.addEventListener("keydown", this.keyDown, false);
-		document.addEventListener("mousemove", this.mouseMoved, false);
-		document.addEventListener("mousewheel", this.scrolled, false);
-		document.addEventListener("click", this.touchUp, false);
-		document.addEventListener("contextmenu", this.touchUp, false); // for right mouse click
+		Input.enabled = true;
+		document.addEventListener("keyup", Input.keyUp, false);
+		document.addEventListener("keydown", Input.keyDown, false);
+		document.addEventListener("mousemove", Input.mouseMoved, false);
+		document.addEventListener("mousewheel", Input.scrolled, false);
+		document.addEventListener("click", Input.touchUp, false);
+		document.addEventListener("contextmenu", Input.touchUp, false); // for right mouse click
 	};
 
 	Input.disable = function() {
-		this.enabled = false;
-		document.removeEventListener("keyup", this.keyUp, false);
-		document.removeEventListener("keydown", this.keyDown, false);
-		document.removeEventListener("mousemove", this.mouseMoved, false);
-		document.removeEventListener("mousewheel", this.scrolled, false);
-		document.removeEventListener("click", this.touchUp, false);
-		document.removeEventListener("contextmenu", this.touchUp, false); // for right mouse click
+		Input.enabled = false;
+		document.removeEventListener("keyup", Input.keyUp, false);
+		document.removeEventListener("keydown", Input.keyDown, false);
+		document.removeEventListener("mousemove", Input.mouseMoved, false);
+		document.removeEventListener("mousewheel", Input.scrolled, false);
+		document.removeEventListener("click", Input.touchUp, false);
+		document.removeEventListener("contextmenu", Input.touchUp, false); // for right mouse click
 	};
 
 	Input.setInputProcessor = function(processor) {
-		this.inputProcessor = processor;
+		Input.inputProcessor = processor;
 	};
 
 	Input.keyUp = function(event) {
 		z2d.Logger.log('keyup');
 		z2d.Logger.log(event);
-		if (this.inputProcessor) {
-			this.inputProcessor.onKeyUp(event.keyCode);
+		if (Input.inputProcessor) {
+			Input.inputProcessor.onKeyUp(event.keyCode);
 		}
 	};
 
 	Input.keyDown = function(event) {
 		z2d.Logger.log('keydown');
 		z2d.Logger.log(event);
-		if (this.inputProcessor) {
-			this.inputProcessor.onKeyDown(event.keyCode);
+		if (Input.inputProcessor) {
+			console.log('here');
+			Input.inputProcessor.onKeyDown(event.keyCode);
 		}
 	};
 
 	Input.mouseMoved = function(event) {
 		z2d.Logger.log('mousemoved');
 		z2d.Logger.log(event);
-		if (this.inputProcessor) {
-			this.inputProcessor.onMouseMoved(event.clientX, event.clientY);
+		if (Input.inputProcessor) {
+			Input.inputProcessor.onMouseMoved(event.clientX, event.clientY);
 		}
 	};
 
 	Input.scrolled = function(event) {
 		z2d.Logger.log('scrolled');
 		z2d.Logger.log(event);
-		if (this.inputProcessor) {
-			this.inputProcessor.onScrolled(event.wheelDelta);
+		if (Input.inputProcessor) {
+			Input.inputProcessor.onScrolled(event.wheelDelta);
 		}
 	};
 
 	Input.touchUp = function(event) {
 		z2d.Logger.log('touchup');
 		z2d.Logger.log(event);
-		if (this.inputProcessor) {
-			this.inputProcessor.onTouchUp(event.clientX, event.clientY, event.which);
+		if (Input.inputProcessor) {
+			Input.inputProcessor.onTouchUp(event.clientX, event.clientY, event.which);
 		}
 	};
 
 	Input.touchDown = function(event) {
 		z2d.Logger.log('touchdown');
 		z2d.Logger.log(event);
-		if (this.inputProcessor) {
+		if (Input.inputProcessor) {
 			
 		}
 	};
@@ -480,6 +481,42 @@ var engine = new z2d.Engine({
 	})
 });
 
+
+var testProcessor = function() {
+
+};
+testProcessor.prototype = {
+	constructor: testProcessor,
+
+	onKeyUp: function(keyCode) {
+
+	},
+
+	onKeyDown: function(keyCode) {
+		console.log('here');
+		console.log(keyCode);
+		console.log(keyCode == z2d.Input.Keys.F);
+	},
+
+	onMouseMoved: function(x, y) {
+
+	},
+
+	onScrolled: function(amount) {
+
+	},
+
+	onTouchUp: function(x, y, button) {
+
+	},
+
+	onTouchDown: function(x, y, button) {
+
+	},
+};
+
+z2d.Input.setInputProcessor(new testProcessor());
+z2d.Input.enable();
 
 //engine.run();
 
