@@ -518,6 +518,8 @@ testProcessor.prototype = {
 z2d.Input.setInputProcessor(new testProcessor());
 z2d.Input.enable();
 
+//just to fix #3
+
 //engine.run();
 
 //sm.addScreen(s1.name, s1);
