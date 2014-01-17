@@ -1,7 +1,6 @@
 var z2d = {
 	VERSION: '0.1',
-	LOG_LEVEL: 0,
-	Screens: {},
+	LOG_LEVEL: 1,
 	Logger: {
 		LOG_CRIT: 1,
 		LOG_WARN: 2,
@@ -417,40 +416,40 @@ z2d.Screen.prototype = {
 
 };
 
-z2d.Screens.PreloadScreen = function(options)
+var PreloadScreen = function(options)
 {
 	z2d.Logger.log('new PreloadScreen');
 	options = options || {};
 	options.name = 'preload';
 	z2d.Screen.call(this, options);
 }
-z2d.Screens.PreloadScreen.prototype = Object.create(z2d.Screen.prototype);
-z2d.Screens.PreloadScreen.prototype.constructor = z2d.Screens.PreloadScreen;
+PreloadScreen.prototype = Object.create(z2d.Screen.prototype);
+PreloadScreen.prototype.constructor = PreloadScreen;
 
-z2d.Screens.PreloadScreen.prototype.onEnter = function() {
+PreloadScreen.prototype.onEnter = function() {
 	z2d.Logger.log('entering preload screen');
 	this.screenMachine.transition('title');
 };
 
-z2d.Screens.PreloadScreen.prototype.onLeave = function() {
+PreloadScreen.prototype.onLeave = function() {
 	z2d.Logger.log('leaving preload screen');
 };
 
-z2d.Screens.TitleScreen = function(options)
+var TitleScreen = function(options)
 {
 	z2d.Logger.log('new TitleScreen');
 	options = options || {};
 	options.name = 'title';
 	z2d.Screen.call(this, options);
 }
-z2d.Screens.TitleScreen.prototype = Object.create(z2d.Screen.prototype);
-z2d.Screens.TitleScreen.prototype.constructor = z2d.Screens.TitleScreen;
+TitleScreen.prototype = Object.create(z2d.Screen.prototype);
+TitleScreen.prototype.constructor = TitleScreen;
 
-z2d.Screens.TitleScreen.prototype.onEnter = function() {
+TitleScreen.prototype.onEnter = function() {
 	z2d.Logger.log('entering title screen');
 },
 
-z2d.Screens.TitleScreen.prototype.onLeave = function() {
+TitleScreen.prototype.onLeave = function() {
 	z2d.Logger.log('leaving title screen');
 }
 
@@ -463,15 +462,15 @@ z2d.Screens.TitleScreen.prototype.onLeave = function() {
 // 	currentScreen: 'preload'
 // });
 
-// var engine = new z2d.Engine({
-// 	screenMachine: new z2d.ScreenMachine({
-// 		screens: {
-// 			'preload': new z2d.Screens.PreloadScreen(),
-// 			'title': new z2d.Screens.TitleScreen()
-// 		},
-// 		currentScreen: 'preload'
-// 	})
-// });
+var engine = new z2d.Engine({
+	screenMachine: new z2d.ScreenMachine({
+		screens: {
+			'preload': new PreloadScreen(),
+			'title': new TitleScreen()
+		},
+		currentScreen: 'preload'
+	})
+});
 
 
 // var testProcessor = function() {
