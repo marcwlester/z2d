@@ -15,6 +15,9 @@ var z2d = {
 	Engine: {
 		UPDATE_INTERVAL: 1000 / 16
 	},
+	Loader: {
+
+	},
 	Input: {
 		Buttons: {
 			LEFT: 1,
@@ -149,6 +152,57 @@ z2d.Logger = (function(Logger) {
 	return Logger;
 }(z2d.Logger));
 
+z2d.Loader = (function(Loader) {
+	Loader.onComplete = null;
+	Loader.manifest = null;
+	Loader.numAssets = 0;
+	Loader.loadedAssets = 0;
+	Loader.assets = {};
+	Loader.loadManifest = function(manifest, complete, assetLoaded) {
+		Loader.manifest = manifest;
+		Loader.numAssets = manifest.length;
+		Loader.loadedAssets = 0;
+		Loader.onComplete = complete;
+
+		for (var i = 0; i < Loader.numAssets; i++) {
+			var spec = manifest[i];
+
+			if (spec.type == 'img') {
+				Loader.assets[spec.name] = new Image();
+				Loader.assets[spec.name].onload = Loader.assetLoaded(spec, assetLoaded);
+				Loader.assets[spec.name].src = spec.src;
+			}
+
+			if (spec.type == 'audio') {
+				Loader.assets[spec.name] = new Audio();
+				Loader.assets[spec.name].addEventListener('canplaythrough', Loader.assetLoaded(spec, assetLoaded));
+				Loader.assets[spec.name].src = spec.src;
+			}
+		}
+	};
+
+	Loader.assetLoaded = function(spec, assetLoaded) {
+		Loader.loadedAssets += 1;
+		assetLoaded(spec);
+		if (Loader.loadedAssets == Loader.numAssets) {
+			Loader.onComplete();
+		}
+	};
+
+	Loader.getNumAssets = function() {
+		return Loader.numAssets;
+	}
+
+	Loader.getLoadedAssets = function() {
+		return Loader.loadedAssets;
+	}
+
+	Loader.getAsset = function(name) {
+		return Loader.assets[name];
+	};
+	return Loader;
+}(z2d.Loader));
+
 z2d.Input = (function(Input) {
 	Input.inputProcessor = null;
 	Input.enabled = false;
@@ -267,6 +321,7 @@ z2d.ScreenMachine = function(options)
 	this.options = options || {};
 	this.currentScreen = null;
 	this.screens = {};
+	this.screenReady = false;
 
 	if (this.options.screens) {
 		this.setScreens(this.options.screens);
@@ -408,61 +463,69 @@ z2d.Screens.TitleScreen.prototype.onLeave = function() {
 // 	currentScreen: 'preload'
 // });
 
-var engine = new z2d.Engine({
-	screenMachine: new z2d.ScreenMachine({
-		screens: {
-			'preload': new z2d.Screens.PreloadScreen(),
-			'title': new z2d.Screens.TitleScreen()
-		},
-		currentScreen: 'preload'
-	})
-});
+// var engine = new z2d.Engine({
+// 	screenMachine: new z2d.ScreenMachine({
+// 		screens: {
+// 			'preload': new z2d.Screens.PreloadScreen(),
+// 			'title': new z2d.Screens.TitleScreen()
+// 		},
+// 		currentScreen: 'preload'
+// 	})
+// });
 
 
-var testProcessor = function() {
-	this.neededCode = [z2d.Input.Keys.UP, z2d.Input.Keys.UP, z2d.Input.Keys.DOWN, z2d.Input.Keys.DOWN, z2d.Input.Keys.LEFT, z2d.Input.Keys.RIGHT, z2d.Input.Keys.LEFT, z2d.Input.Keys.RIGHT, z2d.Input.Keys.B, z2d.Input.Keys.A, z2d.Input.Keys.ENTER];
-	this.sofar = 0;
-};
-testProcessor.prototype = {
-	constructor: testProcessor,
+// var testProcessor = function() {
+// 	this.neededCode = [z2d.Input.Keys.UP, z2d.Input.Keys.UP, z2d.Input.Keys.DOWN, z2d.Input.Keys.DOWN, z2d.Input.Keys.LEFT, z2d.Input.Keys.RIGHT, z2d.Input.Keys.LEFT, z2d.Input.Keys.RIGHT, z2d.Input.Keys.B, z2d.Input.Keys.A, z2d.Input.Keys.ENTER];
+// 	this.sofar = 0;
+// };
+// testProcessor.prototype = {
+// 	constructor: testProcessor,
 
-	onKeyUp: function(keyCode) {
+// 	onKeyUp: function(keyCode) {
 
-	},
+// 	},
 
-	onKeyDown: function(keyCode) {
-		if (keyCode == this.neededCode[this.sofar]) {
-			this.sofar++;
-		} else {
-			this.sofar = 0;
-		}
+// 	onKeyDown: function(keyCode) {
+// 		if (keyCode == this.neededCode[this.sofar]) {
+// 			this.sofar++;
+// 		} else {
+// 			this.sofar = 0;
+// 		}
 
-		if (this.sofar == this.neededCode.length) {
-			alert('30 Lives!');
-			this.sofar = 0;
-		}
-		//console.log(keyCode == z2d.Input.Keys.F);
-	},
+// 		if (this.sofar == this.neededCode.length) {
+// 			alert('30 Lives!');
+// 			this.sofar = 0;
+// 		}
+// 		//console.log(keyCode == z2d.Input.Keys.F);
+// 	},
 
-	onMouseMoved: function(x, y) {
+// 	onMouseMoved: function(x, y) {
 
-	},
+// 	},
 
-	onScrolled: function(amount) {
+// 	onScrolled: function(amount) {
 
-	},
+// 	},
 
-	onTouchUp: function(x, y, button) {
+// 	onTouchUp: function(x, y, button) {
 
-	},
+// 	},
 
-	onTouchDown: function(x, y, button) {
+// 	onTouchDown: function(x, y, button) {
 
-	},
-};
+// 	},
+// };
 
-z2d.Input.setInputProcessor(new testProcessor());
-z2d.Input.enable();
+// z2d.Input.setInputProcessor(new testProcessor());
+// z2d.Input.enable();
+
+z2d.Loader.loadManifest([
+	{'type': 'img', 'src': 'data/images/sheet1.png', 'name': 'img1'},
+	{'type': 'img', 'src': 'data/images/sheet2.png', 'name': 'img2'},
+	{'type': 'img', 'src': 'data/images/sheet3.png', 'name': 'img3'},
+	{'type': 'audio', 'src': 'data/audio/audio1.ogg', 'name': 'audio1'},
+	{'type': 'audio', 'src': 'data/audio/audio2.ogg', 'name': 'audio2'}
+	], function() { console.log('loading complete'); }, function(a) { console.log(a); });
 
 //just to fix #3
 
